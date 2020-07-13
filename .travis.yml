@@ -1,31 +1,30 @@
 language: node_js
-node_js:
-  - "12.x"
 
-# deploy_service_job: &DEPLOY_SERVICE_JOB
-#   cache:
-#     directories:
-#       - node_modules
-#       - ${SERVICE_PATH}/node_modules
 
-#   install:
-#     - npm install -g serverless
-#     - cd ${SERVICE_PATH}
-#     - travis_retry npm install
-#     - cd -
+deploy_service_job: &DEPLOY_SERVICE_JOB
+  cache:
+    directories:
+      - node_modules
+      - ${SERVICE_PATH}/node_modules
 
-#   script:
-#     - cd ${SERVICE_PATH}
-#     - serverless deploy -v
-#     - cd -
+  install:
+    - npm install -g serverless
+    - cd ${SERVICE_PATH}
+    - travis_retry npm install
+    - cd -
 
-# jobs:
-#   include:
-#     - <<: *DEPLOY_SERVICE_JOB
-#       name: "Deploy Frontend"
-#       env:
-#         - SERVICE_PATH="client"
-#     - <<: *DEPLOY_SERVICE_JOB
-#       name: "Deploy backend"
-#       env:
-#         - SERVICE_PATH="backend"
+  script:
+    - cd ${SERVICE_PATH}
+    - bash deploy.sh
+    - cd -
+
+jobs:
+  include:
+    - <<: *DEPLOY_SERVICE_JOB
+      name: "Deploy Frontend"
+      env:
+        - SERVICE_PATH="client"
+    - <<: *DEPLOY_SERVICE_JOB
+      name: "Deploy backend"
+      env:
+        - SERVICE_PATH="backend"
