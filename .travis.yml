@@ -1,11 +1,15 @@
 language: node_js
 node_js:
-  - "10.15.3"
+  - "11.0.0"
 
 deploy_service_job: &DEPLOY_SERVICE_JOB
+  cache:
+    directories:
+      - node_modules
+      - ${SERVICE_PATH}/node_modules
 
   install:
-    - npm install -g serverless
+    - npm install -g serverless@1.74.1
     - cd ${SERVICE_PATH}
     - travis_retry npm install
     - cd -
