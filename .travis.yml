@@ -16,7 +16,7 @@ deploy_service_job: &DEPLOY_SERVICE_JOB
 
   script:
     - cd ${SERVICE_PATH}
-    - bash deploy.sh
+    - sls deploy -v
     - cd -
 
 jobs:
