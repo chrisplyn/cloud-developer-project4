@@ -6,13 +6,18 @@ import { createLogger } from '../../utils/logger'
 import Axios from 'axios'
 import { Jwt } from '../../auth/Jwt'
 import { JwtPayload } from '../../auth/JwtPayload'
+import * as AWS  from 'aws-sdk'
+import * as AWSXRay from 'aws-xray-sdk'
 
+const XAWS = AWSXRay.captureAWS(AWS)
 const logger = createLogger('auth')
 
 // TODO: Provide a URL that can be used to download a certificate that can be used
 // to verify JWT token signature.
 // To get this URL you need to go to an Auth0 page -> Show Advanced Settings -> Endpoints -> JSON Web Key Set
 const jwksUrl = 'https://dev-bz4mmv52.us.auth0.com/.well-known/jwks.json'
+const topicARN = process.env.TODO_TOPIC_ARN
+const subscribe = new XAWS.SNS({apiVersion: '2010-03-31'})
 
 export const handler = async (
   event: CustomAuthorizerEvent
@@ -21,6 +26,21 @@ export const handler = async (
   try {
     const jwtToken = await verifyToken(event.authorizationToken)
     logger.info('User was authorized', jwtToken)
+
+    const params = {
+      Protocol: 'EMAIL', /* required */
+      TopicArn: topicARN, /* required */
+      Endpoint: jwtToken.email
+    };
+    
+    try{
+      console.log("Subscription ARN is " + params.TopicArn);
+      console.log("Subscription EMAIL is " + params.Endpoint);
+      await subscribe.subscribe(params).promise();
+    }
+    catch(e){
+      console.error(e, e.stack);
+    }
 
     return {
       principalId: jwtToken.sub,
