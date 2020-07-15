@@ -1,12 +1,8 @@
 language: node_js
 node_js:
-  - "11.0.0"
+  - "10.x"
 
 deploy_service_job: &DEPLOY_SERVICE_JOB
-  cache:
-    directories:
-      - node_modules
-      - ${SERVICE_PATH}/node_modules
 
   install:
     - npm install -g serverless
